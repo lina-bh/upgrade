@@ -1,0 +1,25 @@
+name: Build and push
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build container image
+        id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ github.event.repository.name }}
+          tags: latest ${{ github.sha }}
+          containerfiles: ./Dockerfile
+      - name: Push to ghcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ghcr.io/${{ github.event.repository.owner }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
