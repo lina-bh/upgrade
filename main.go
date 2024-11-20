@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"os"
 )
 
 var logger = log.Default()
@@ -30,8 +31,9 @@ func (*handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, url.String(), http.StatusMovedPermanently)
 }
 
-func main() {
-	srv := &http.Server{
+func listenAndServe(addr string) error {
+	return (&http.Server{
+		Addr:    addr,
 		Handler: &handler{},
 		ConnState: func(conn net.Conn, state http.ConnState) {
 			go func() {
@@ -45,7 +47,15 @@ func main() {
 			go logger.Printf("%s listen", lst.Addr())
 			return context.Background()
 		},
+	}).ListenAndServe()
+}
+
+func main() {
+	var addr string
+	if len(os.Args) > 1 {
+		addr = os.Args[1]
+	} else {
+		log.Fatalf("usage: %s ADDR\n", os.Args[0])
 	}
-	err := srv.ListenAndServe()
-	log.Fatalln(err)
+	log.Fatalln(listenAndServe(addr))
 }
