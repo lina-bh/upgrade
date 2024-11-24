@@ -16,7 +16,7 @@ jobs:
         id: build
         uses: redhat-actions/buildah-build@v2
         with:
-          archs: amd64 arm64
+          archs: amd64, arm64
           image: ${{ github.event.repository.name }}
           tags: latest ${{ github.sha }}
           containerfiles: ./Dockerfile
