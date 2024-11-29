@@ -6,4 +6,4 @@ RUN go build -ldflags "-s -w"
 FROM scratch
 COPY --from=build /src/upgrade /upgrade
 USER 1000
-CMD ["/upgrade"]
+ENTRYPOINT ["/upgrade"]

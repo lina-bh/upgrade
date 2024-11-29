@@ -52,9 +52,13 @@ func listenAndServe(addr string) error {
 
 func main() {
 	var addr string
-	if len(os.Args) > 1 {
+	argc := len(os.Args)
+	switch {
+	case argc == 2:
 		addr = os.Args[1]
-	} else {
+	case argc == 3 && os.Args[1] == "/upgrade":
+		addr = os.Args[2]
+	default:
 		log.Fatalf("usage: %s ADDR\n", os.Args[0])
 	}
 	log.Fatalln(listenAndServe(addr))
